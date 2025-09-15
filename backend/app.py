@@ -1,17 +1,27 @@
-# Flaskというフレームワークから、Flaskクラスをインポートします
-from flask import Flask
+from flask import Flask, jsonify
+from flask_cors import CORS  # 追加
 
-# Flaskクラスのインスタンス（実体）を作成します
 app = Flask(__name__)
+CORS(app)  # 追加
 
-# ルーティングを設定します。'/'へのアクセスがあった場合に、以下の関数が実行されます
-@app.route('/')
-def hello():
-    # ブラウザに表示する文字列を返します
-    return 'Hello from Python Backend!'
+# ダミーの投稿データを作成します
+dummy_posts = [
+    {
+        'id': 1,
+        'title': 'Pythonからの最初の投稿',
+        'content': 'これはバックエンド(Python)から取得した最初の投稿です！'
+    },
+    {
+        'id': 2,
+        'title': 'JSON形式について',
+        'content': 'フロントエンドとバックエンドは、JSONという共通言語でデータを交換します。'
+    }
+]
 
-# このファイルが直接実行された場合に、Webサーバーを起動します
+# '/api/posts' というURLにアクセスがあった場合に、投稿データを返すAPI
+@app.route('/api/posts')
+def get_posts():
+    return jsonify(dummy_posts)
+
 if __name__ == '__main__':
-    # host='0.0.0.0'は、どのネットワークからでもアクセス可能にする設定です
-    # port=5000は、5000番ポートで待ち受ける設定です
     app.run(host='0.0.0.0', port=5000, debug=True)
