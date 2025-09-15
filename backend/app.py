@@ -1,47 +1,38 @@
-# requestを追加でインポートします
+import sqlite3
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-dummy_posts = [
-    # ... (今までのダミーデータはそのまま) ...
-    {
-        'id': 1,
-        'title': 'Pythonからの最初の投稿',
-        'content': 'これはバックエンド(Python)から取得した最初の投稿です！'
-    },
-    {
-        'id': 2,
-        'title': 'JSON形式について',
-        'content': 'フロントエンドとバックエンドは、JSONという共通言語でデータを交換します。'
-    }
-]
+# データベースに接続して、結果を辞書のリストとして返すためのヘルパー関数
+def get_db_connection():
+    conn = sqlite3.connect('blog.db')
+    conn.row_factory = sqlite3.Row # 列名でアクセスできるようにする
+    return conn
 
-# '/api/posts' へのGETリクエスト（データ取得）とPOSTリクエスト（データ作成）の両方を受け付けるようにします
+# '/api/posts' へのGETリクエスト（データ取得）とPOSTリクエスト（データ作成）
 @app.route('/api/posts', methods=['GET', 'POST'])
 def handle_posts():
+    conn = get_db_connection()
+    
     # POSTリクエストの場合（新しい投稿を作成）
     if request.method == 'POST':
-        # フロントエンドから送られてきたJSONデータを取得します
         data = request.get_json()
-        
-        # 新しい投稿データを作成します
-        new_post = {
-            'id': len(dummy_posts) + 1,
-            'title': data['title'],
-            'content': data['content']
-        }
-        # dummy_postsリストに新しい投稿を追加します
-        dummy_posts.append(new_post)
-        
-        # 追加した投稿データをフロントエンドに返します
-        return jsonify(new_post), 201 # 201は「作成成功」を意味するステータスコードです
-    
+        conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
+                     (data['title'], data['content']))
+        conn.commit()
+        conn.close()
+        return jsonify({'status': 'success'}), 201
+
     # GETリクエストの場合（投稿一覧を取得）
     else:
-        return jsonify(dummy_posts)
+        posts_query = conn.execute('SELECT * FROM posts ORDER BY created_at DESC').fetchall()
+        conn.close()
+        
+        # データベースの結果を辞書のリストに変換
+        posts = [dict(row) for row in posts_query]
+        return jsonify(posts)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
