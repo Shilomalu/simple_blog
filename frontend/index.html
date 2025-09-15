@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルなブログ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>シンプルなブログ</h1>
+    </header>
+
+    <main>
+        <section class="post-form">
+            <h2>新しい投稿</h2>
+            <form>
+                <div>
+                    <label for="title">タイトル</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div>
+                    <label for="content">内容</label>
+                    <textarea id="content" name="content" rows="4" required></textarea>
+                </div>
+                <button type="submit">投稿する</button>
+            </form>
+        </section>
+
+        <section class="post-list">
+            <h2>投稿一覧</h2>
+            <article>
+                <h3>これはダミーの投稿タイトルです</h3>
+                <p>これはダミーの投稿内容です。ここに実際の投稿が表示されます。</p>
+            </article>
+            <article>
+                <h3>2つ目のダミー投稿です</h3>
+                <p>バックエンドと繋ぐと、ここにデータベースの内容が表示されます。</p>
+            </article>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
